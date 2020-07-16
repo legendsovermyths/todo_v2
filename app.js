@@ -15,6 +15,7 @@ app.use(express.static("public"));
 // const workItems = [];
 var items=[];
 mongoose.connect("mongodb://localhost:27017/todolistDB",{useNewUrlParser:true})
+mongoose.set('useFindAndModify', false);
 const itemsSchema={
   task:String
 }
@@ -67,17 +68,24 @@ app.get("/", function(req, res) {
 
 app.post("/", function(req, res){
 
-  const item = req.body.newItem;
-
-  if (req.body.list === "Work") {
-    workItems.push(item);
-    res.redirect("/work");
-  } else {
-    var newItem=new Item({
-      task:item
-    })
-    newItem.save()
+  const itemName = req.body.newItem;
+  const title= req.body.list
+  const iten=new Item({
+    task:itemName
+  })
+  console.log(title);
+  if (title === "Today") {
+    iten.save()
     res.redirect("/");
+  }
+  else {
+    List.findOne({listCategory:title},function(err,foundItems){
+      if(!err){
+        foundItems.listItem.push(iten)
+        foundItems.save()
+        res.redirect("/"+title)
+      }
+    })
   }
 });
 
@@ -89,12 +97,25 @@ app.get("/about", function(req, res){
   res.render("about");
 });
 app.post("/delete",function(req,res){
-  Item.findByIdAndRemove(req.body.checkbox,function(err){
-    if(err){
-      console.log(err);
-    }
-  })
-  res.redirect("/")
+  console.log(req.body);
+  const listName=req.body.listName;
+  const id=req.body.checkbox
+  console.log(req.body.checkbox);
+  if(listName=="Today"){
+    Item.findByIdAndRemove(req.body.checkbox,function(err){
+      if(err){
+        console.log(err);
+      }
+    })
+    res.redirect("/")
+  }else{
+    List.findOneAndUpdate({listCategory:listName},{$pull:{listItem:{_id:id}}},function(err,foundList){
+      if(!err){
+        res.redirect("/"+listName);
+      }
+    })
+  }
+
 })
 app.get("/:category",function(req,res){
   const listItemCategory=req.params.category
