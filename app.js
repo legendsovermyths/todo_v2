@@ -69,7 +69,10 @@ app.post("/", function(req, res){
     workItems.push(item);
     res.redirect("/work");
   } else {
-    items.push(item);
+    var newItem=new Item({
+      task:item
+    })
+    newItem.save()
     res.redirect("/");
   }
 });
@@ -81,6 +84,10 @@ app.get("/work", function(req,res){
 app.get("/about", function(req, res){
   res.render("about");
 });
+app.post("/delete",function(req,res){
+  console.log(req.body)
+  res.redirect("/")
+})
 
 app.listen(3000, function() {
   console.log("Server started on port 3000");
