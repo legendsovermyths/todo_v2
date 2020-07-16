@@ -35,7 +35,11 @@ const item3=new Item(
   }
 )
 const defaultItems=[item1,item2,item3]
-
+const listSchema={
+  listCategory:String,
+  listItem:[itemsSchema]
+}
+const List=mongoose.model("List",listSchema)
 
 app.get("/", function(req, res) {
 
@@ -85,10 +89,34 @@ app.get("/about", function(req, res){
   res.render("about");
 });
 app.post("/delete",function(req,res){
-  console.log(req.body)
+  Item.findByIdAndRemove(req.body.checkbox,function(err){
+    if(err){
+      console.log(err);
+    }
+  })
   res.redirect("/")
 })
+app.get("/:category",function(req,res){
+  const listItemCategory=req.params.category
+  List.findOne({listCategory:listItemCategory},function(err,foundList){
+    if(!err){
+      if(!foundList){
+        const list=new List({
+          listCategory:listItemCategory,
+          listItem:defaultItems
+        })
+        list.save()
 
+        res.redirect("/"+listItemCategory)
+      }
+      else{
+        res.render("list", {listTitle: foundList.listCategory, newListItems: foundList.listItem});
+        console.log(foundList.listItem);
+      }
+    }
+  })
+}
+)
 app.listen(3000, function() {
   console.log("Server started on port 3000");
 });
