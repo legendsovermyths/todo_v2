@@ -16,7 +16,7 @@ app.use(express.static("public"));
 // const items = ["Buy Food", "Cook Food", "Eat Food"];
 // const workItems = [];
 var items = [];
-mongoose.connect("mongodb://localhost:27017/todolistDB", {
+mongoose.connect("mongodb+srv://Admin:<Password>@cluster0.jio15.mongodb.net/todolistDB?retryWrites=true&w=majority", {
   useNewUrlParser: true
 })
 mongoose.set('useFindAndModify', false);
@@ -103,7 +103,7 @@ app.post("/delete", function(req, res) {
   console.log(req.body);
   const listName = req.body.listName;
   const id = req.body.checkbox
-  console.log(req.body.checkbox);
+
   if (listName == "Today") {
     Item.findByIdAndRemove(req.body.checkbox, function(err) {
       if (err) {
