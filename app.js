@@ -16,7 +16,7 @@ app.use(express.static("public"));
 // const items = ["Buy Food", "Cook Food", "Eat Food"];
 // const workItems = [];
 var items = [];
-mongoose.connect("mongodb+srv://Admin:<Password>@cluster0.jio15.mongodb.net/todolistDB?retryWrites=true&w=majority", {
+mongoose.connect("mongodb+srv://Admin:Test123@cluster0.jio15.mongodb.net/todolistDB?retryWrites=true&w=majority", {
   useNewUrlParser: true
 })
 mongoose.set('useFindAndModify', false);
